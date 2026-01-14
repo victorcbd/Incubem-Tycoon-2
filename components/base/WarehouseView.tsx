@@ -12,8 +12,12 @@ const WarehouseView: React.FC<WarehouseViewProps> = ({ currentUser }) => {
     const [myPurchases, setMyPurchases] = useState<PurchaseRecord[]>([]);
 
     useEffect(() => {
-        const all = marketDatabase.getPurchases();
-        setMyPurchases(all.filter(p => p.userId === currentUser.id));
+        // Fix: Added async wrapper to properly await the Promise from marketDatabase.getPurchases()
+        const loadPurchases = async () => {
+            const all = await marketDatabase.getPurchases();
+            setMyPurchases(all.filter(p => p.userId === currentUser.id));
+        };
+        loadPurchases();
     }, [currentUser.id]);
 
     return (

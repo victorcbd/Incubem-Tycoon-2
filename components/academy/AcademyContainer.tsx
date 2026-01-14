@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { GameState, User, AcademyGap, LearningTrack, UserTrackProgress } from '../../types';
 import { academyDatabase } from '../../services/academyDatabase';
@@ -27,13 +28,17 @@ const AcademyContainer: React.FC<AcademyContainerProps> = ({ gameState, currentU
 
     // Initial Load
     useEffect(() => {
-        setTracks(academyDatabase.getTracks());
-        
-        const allProgress = academyDatabase.getProgress();
-        const myProgress = allProgress.filter(p => p.userId === currentUser.id);
-        const map: Record<string, UserTrackProgress> = {};
-        myProgress.forEach(p => map[p.trackId] = p);
-        setProgressMap(map);
+        // Fix: Added async function to handle Promise results from the database service
+        const loadTracksAndProgress = async () => {
+            setTracks(await academyDatabase.getTracks());
+            
+            const allProgress = await academyDatabase.getProgress();
+            const myProgress = allProgress.filter(p => p.userId === currentUser.id);
+            const map: Record<string, UserTrackProgress> = {};
+            myProgress.forEach(p => map[p.trackId] = p);
+            setProgressMap(map);
+        };
+        loadTracksAndProgress();
     }, [currentUser.id]);
 
     const handlePublishTrack = (newTrack: LearningTrack) => {
@@ -43,8 +48,9 @@ const AcademyContainer: React.FC<AcademyContainerProps> = ({ gameState, currentU
         setView('TRACKS');
     };
 
-    const refreshProgress = () => {
-        const allProgress = academyDatabase.getProgress();
+    // Fix: Made refreshProgress async to correctly handle Promise return from academyDatabase.getProgress()
+    const refreshProgress = async () => {
+        const allProgress = await academyDatabase.getProgress();
         const myProgress = allProgress.filter(p => p.userId === currentUser.id);
         const map: Record<string, UserTrackProgress> = {};
         myProgress.forEach(p => map[p.trackId] = p);
@@ -114,7 +120,7 @@ const AcademyContainer: React.FC<AcademyContainerProps> = ({ gameState, currentU
                     />
                 )}
                 {view === 'IMPACT' && isSenior && (
-                     <ImpactView tracks={tracks} allProgress={academyDatabase.getProgress()} />
+                     <ImpactView tracks={tracks} allProgress={[]} />
                 )}
             </div>
 

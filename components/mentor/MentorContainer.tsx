@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { User, Squad, DailyEntry, FeedbackEntry } from '../../types';
 import { mentorDatabase } from '../../services/mentorDatabase';
@@ -25,8 +26,14 @@ const MentorContainer: React.FC<MentorContainerProps> = ({
   
   // Load data on mount
   useEffect(() => {
-      setDailies(mentorDatabase.getDailies());
-      setFeedbacks(mentorDatabase.getFeedbacks());
+      // Fix: mentorDatabase.getDailies and getFeedbacks are async
+      const loadData = async () => {
+        const d = await mentorDatabase.getDailies();
+        const f = await mentorDatabase.getFeedbacks();
+        setDailies(d);
+        setFeedbacks(f);
+      };
+      loadData();
   }, []);
 
   const handleSaveDaily = (entry: DailyEntry) => {

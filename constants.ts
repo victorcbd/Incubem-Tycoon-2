@@ -17,34 +17,34 @@ export const BUILD_COSTS: Record<BuildingType, { coins: number }> = {
 
 export const BUILDING_METADATA: Record<string, { title: string; description: string; functions: string[] }> = {
     [BuildingType.TRIBAL_CENTER]: {
-        title: "Centro da Tribo",
-        description: "O coração administrativo e de conhecimento da guilda. Um local de acolhimento, reflexão e gestão centralizada.",
-        functions: ["Dashboard Geral", "Mentoria", "Academy"]
+        title: "Centro OCCA",
+        description: "O coração estratégico e cultural da Tribo OCCA. Centro de acolhimento e gestão mestre.",
+        functions: ["Dashboard Board", "Mentoria IA", "OCCA Academy"]
     },
     [BuildingType.GOVERNANCE]: {
-        title: "Governança Institucional",
-        description: "Garante integridade, direção institucional, conformidade, qualidade e segurança organizacional.",
-        functions: ["Gestão Geral", "Jurídica", "Fiscal", "Auditoria", "Compliance", "Qualidade"]
+        title: "Governança OCCA",
+        description: "Garante integridade, direção institucional, conformidade e integridade da guilda.",
+        functions: ["Gestão OCCA", "Compliance", "Jurídico"]
     },
     [BuildingType.PEOPLE]: {
-        title: "Pessoas & Cultura",
-        description: "Cuida das relações humanas, desenvolvimento de equipe, ambiente colaborativo e da cultura organizacional.",
-        functions: ["Capital Humano", "RH", "Gestão de Pessoas"]
+        title: "Pessoas & Cultura OCCA",
+        description: "Desenvolvimento humano e ambiente colaborativo da tribo.",
+        functions: ["Talentos", "Comunidade", "Cultura"]
     },
     [BuildingType.PRODUCT]: {
-        title: "Produto & Inovação",
-        description: "Cria soluções, desenvolve produtos, conduz pesquisa, testes e melhorias contínuas.",
-        functions: ["P&D", "Design", "Prototipagem"]
+        title: "Inovação & Produto",
+        description: "Laboratório de soluções OCCA, pesquisa e novos desenvolvimentos.",
+        functions: ["Design", "Prototipagem", "Laboratório"]
     },
     [BuildingType.MARKET]: {
-        title: "Mercado & Relacionamento",
-        description: "Conecta o projeto ao público e ao ecossistema. Comunicação, vendas e comunidade.",
-        functions: ["Marketing", "Comercial", "Atendimento", "Comunidade"]
+        title: "Relacionamento OCCA",
+        description: "Comunicação, expansão e conexão com o ecossistema externo.",
+        functions: ["Marketing", "Vendas", "Networking"]
     },
     [BuildingType.RESOURCES]: {
-        title: "Recursos & Infraestrutura",
-        description: "Garante os meios, insumos, logística, tecnologia e suporte necessários.",
-        functions: ["Financeira", "Contabilidade", "Compras", "Logística", "TIC"]
+        title: "Infra & Recursos",
+        description: "Suporte logístico, financeiro e tecnológico para as squads.",
+        functions: ["Financeiro", "Logística", "TI"]
     }
 };
 

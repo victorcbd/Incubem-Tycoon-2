@@ -2547,7 +2547,8 @@ export default function App() {
                                         <div className="mt-4 pt-4 border-t border-slate-600">
                                              {(() => {
                                                 const totalAvailable = editingTask.task.size * editingTask.task.complexity;
-                                                const currentDistributed = Object.values(editingTask.task.customPaDistribution || {}).reduce((a,b) => a+b, 0);
+                                                // Fix: Explicitly cast to number[] to resolve unknown type addition error during reduction
+                                                const currentDistributed = (Object.values(editingTask.task.customPaDistribution || {}) as number[]).reduce((a, b) => a + b, 0);
                                                 const isMatch = currentDistributed === totalAvailable;
                                                 return (
                                                     <div className="flex justify-between items-center">

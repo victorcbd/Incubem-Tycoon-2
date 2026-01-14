@@ -21,8 +21,14 @@ const MarketContainer: React.FC<MarketContainerProps> = ({ currentUser, userCoin
     const [editingItem, setEditingItem] = useState<MarketItem | null>(null);
 
     useEffect(() => {
-        setItems(marketDatabase.getItems());
-        setPurchases(marketDatabase.getPurchases());
+        // Fix: marketDatabase methods are async
+        const loadData = async () => {
+            const i = await marketDatabase.getItems();
+            const p = await marketDatabase.getPurchases();
+            setItems(i);
+            setPurchases(p);
+        };
+        loadData();
     }, []);
 
     const handleBuy = (item: MarketItem) => {

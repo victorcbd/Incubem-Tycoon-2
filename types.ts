@@ -123,6 +123,7 @@ export interface BuildingData {
   lastCollected?: number;
   tasks: KanbanTask[]; 
   squadId?: string; // If type is SQUAD_HQ, this links to the squad
+  description?: string; // Manual notes for the building
 }
 
 export interface PlayerProfile {

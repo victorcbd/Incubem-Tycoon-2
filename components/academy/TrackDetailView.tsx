@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { LearningTrack, User, UserTrackProgress } from '../../types';
 import { academyDatabase } from '../../services/academyDatabase';
@@ -12,7 +13,8 @@ interface TrackDetailViewProps {
 }
 
 const TrackDetailView: React.FC<TrackDetailViewProps> = ({ track, currentUser, progress, onBack, onUpdateProgress }) => {
-    const watchedIds = new Set(progress?.videosWatched || []);
+    // Fix: Explicitly cast to string[] to satisfy Set constructor requirements and resolve unknown type error
+    const watchedIds = new Set((progress?.videosWatched || []) as string[]);
 
     const handleWatch = (videoId: string) => {
         // In a real app, verify watch time. Here we just mark as watched when clicked.

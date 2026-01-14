@@ -4,7 +4,6 @@ import { MarketItem, PurchaseRecord } from "../types";
 const ITEMS_KEY = 'incubem_market_items';
 const PURCHASES_KEY = 'incubem_market_purchases';
 
-// Itens iniciais sugeridos com valores ajustados para a nova economia (200 - 500)
 const INITIAL_ITEMS: MarketItem[] = [
     { id: 'mi_1', name: 'Almoço com o CEO', description: 'Uma conversa estratégica durante o almoço.', cost: 500, stock: 2, category: 'Networking', isActive: true },
     { id: 'mi_2', name: 'Day Off Extra', description: 'Um dia de folga remunerada à sua escolha.', cost: 450, stock: 5, category: 'Qualidade de Vida', isActive: true },
@@ -13,7 +12,7 @@ const INITIAL_ITEMS: MarketItem[] = [
 ];
 
 export const marketDatabase = {
-    getItems: (): MarketItem[] => {
+    getItems: async (): Promise<MarketItem[]> => {
         try {
             const stored = localStorage.getItem(ITEMS_KEY);
             if (!stored) {
@@ -26,27 +25,33 @@ export const marketDatabase = {
         }
     },
 
-    saveItems: (items: MarketItem[]) => {
+    saveItems: async (items: MarketItem[]) => {
         localStorage.setItem(ITEMS_KEY, JSON.stringify(items));
     },
 
-    getPurchases: (): PurchaseRecord[] => {
+    getPurchases: async (userId?: string): Promise<PurchaseRecord[]> => {
         try {
             const stored = localStorage.getItem(PURCHASES_KEY);
-            return stored ? JSON.parse(stored) : [];
+            let all: PurchaseRecord[] = stored ? JSON.parse(stored) : [];
+            if (userId) {
+                all = all.filter(p => p.userId === userId);
+            }
+            return all.sort((a, b) => b.timestamp - a.timestamp);
         } catch (e) {
             return [];
         }
     },
 
-    savePurchase: (purchase: PurchaseRecord) => {
-        const current = marketDatabase.getPurchases();
+    savePurchase: async (purchase: PurchaseRecord) => {
+        const stored = localStorage.getItem(PURCHASES_KEY);
+        const current: PurchaseRecord[] = stored ? JSON.parse(stored) : [];
         current.push(purchase);
         localStorage.setItem(PURCHASES_KEY, JSON.stringify(current));
     },
 
-    updatePurchaseStatus: (purchaseId: string, status: PurchaseRecord['status']) => {
-        const current = marketDatabase.getPurchases();
+    updatePurchaseStatus: async (purchaseId: string, status: PurchaseRecord['status']) => {
+        const stored = localStorage.getItem(PURCHASES_KEY);
+        const current: PurchaseRecord[] = stored ? JSON.parse(stored) : [];
         const updated = current.map(p => p.id === purchaseId ? { ...p, status } : p);
         localStorage.setItem(PURCHASES_KEY, JSON.stringify(updated));
     }
