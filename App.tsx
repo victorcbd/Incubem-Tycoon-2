@@ -15,67 +15,48 @@ const INITIAL_RESOURCES: Resources = { coins: 0 };
 
 const REAL_SQUADS: Squad[] = [
     { id: 'sq_board', name: 'Board', color: '#ffffff', description: 'Alta Gestão' }, // White/Master
-    { id: 'sq_rotae', name: 'Rotaê', color: '#ef4444', description: 'Equipe focada em Rotaê.' }, // Red
-    { id: 'sq_geracao', name: 'Geração Conectada', color: '#3b82f6', description: 'Equipe Geração Conectada.' }, // Blue
-    { id: 'sq_madein', name: 'Made in Belo Jardim', color: '#d946ef', description: 'Equipe Made in Belo Jardim.' }, // Fuchsia
-    { id: 'sq_study', name: 'Study You', color: '#f59e0b', description: 'Equipe Study You.' }, // Amber
-    { id: 'sq_catalise', name: 'Catalise', color: '#84cc16', description: 'Equipe Catalise.' } // Lime
+    { id: 'sq_osc', name: 'OCCA Social Club', color: '#ef4444', description: 'Bem-vindos ao OSC' }, // Red
+    { id: 'sq_academy', name: 'OCCA Academy', color: '#3b82f6', description: 'vamos juntos construir novos futuros com o aprendizado' }, // Blue
+    { id: 'sq_occasulo', name: 'OCCAsulo', color: '#d946ef', description: 'Transformando iniciativas' }, // Fuchsia
 ];
 
 const REAL_USERS: User[] = [
     // MASTER USER
     { id: 'u_senior', name: 'Senior', squadId: 'sq_board', role: 'Master', cpf: '000.000.000-00', color: '#ffffff' },
 
-    // Rotaê
-    { id: 'u_14130055437', name: 'Edson', squadId: 'sq_rotae', role: 'Mentor Júnior', cpf: '141.300.554-37', color: '#ef4444' },
-    { id: 'u_07406180594', name: 'Adriele', squadId: 'sq_rotae', role: 'Executor', cpf: '074.061.805-94', color: '#fca5a5' },
-    { id: 'u_14900059439', name: 'Jeniffer', squadId: 'sq_rotae', role: 'Executor', cpf: '149.000.594-39', color: '#fca5a5' },
-    { id: 'u_12854473442', name: 'Emilly', squadId: 'sq_rotae', role: 'Executor', cpf: '128.544.734-42', color: '#fca5a5' },
-    { id: 'u_12379195412', name: 'Iara', squadId: 'sq_rotae', role: 'Executor', cpf: '123.791.954-12', color: '#fca5a5' },
+    // OSC
+    { id: 'u_14130055437', name: 'Vitoria Lira', squadId: 'sq_board', role: 'Mentor Júnior', cpf: '000.000.000-00', color: '#ef4444' },
+    { id: 'u_07406180594', name: 'Luiz Guilherme', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_14900059439', name: 'Alice', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_12854473442', name: 'Camila', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_12379195412', name: 'Breno', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_16781484400', name: 'Gabriel Ferraz', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_71774671492', name: 'Rafael Cavalvanti', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_16817509459', name: 'Julia Moura', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_15067051469', name: 'Gabriel Vinicius', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_14634956411', name: 'Davi Andany', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_15671040450', name: 'Laish Rodrigues', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_15333194483', name: 'Evelin', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5'},
+    { id: 'u_12688925482', name: 'Caio Cesar', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5'},
+    { id: 'u_12854659465', name: 'Moises Carlos', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_11280537485', name: 'Gizelly', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
+    { id: 'u_11363982443', name: 'Grazielly', squadId: 'sq_osc', role: 'Executor', cpf: '000.000.000-00', color: '#fca5a5' },
     
-    // Geração Conectada
-    { id: 'u_15062240409', name: 'Magno', squadId: 'sq_geracao', role: 'Mentor Júnior', cpf: '150.622.404-09', color: '#3b82f6' },
-    { id: 'u_16781484400', name: 'Alexandre', squadId: 'sq_geracao', role: 'Executor', cpf: '167.814.844-00', color: '#93c5fd' },
-    { id: 'u_71774671492', name: 'Ana Beatriz', squadId: 'sq_geracao', role: 'Executor', cpf: '717.746.714-92', color: '#93c5fd' },
-    { id: 'u_16817509459', name: 'Pedro', squadId: 'sq_geracao', role: 'Executor', cpf: '168.175.094-59', color: '#93c5fd' },
-    { id: 'u_15067051469', name: 'Laís', squadId: 'sq_geracao', role: 'Executor', cpf: '150.670.514-69', color: '#93c5fd' },
-
-    // Made in Belo Jardim
-    { id: 'u_14634956411', name: 'Taylle', squadId: 'sq_madein', role: 'Mentor Júnior', cpf: '146.349.564-11', color: '#d946ef' },
-    { id: 'u_15671040450', name: 'Beatriz', squadId: 'sq_madein', role: 'Executor', cpf: '156.710.404-50', color: '#f0abfc' },
-    { id: 'u_15333194483', name: 'Clara', squadId: 'sq_madein', role: 'Executor', cpf: '153.331.944-83', color: '#f0abfc' },
-    { id: 'u_12688925482', name: 'Mariane', squadId: 'sq_madein', role: 'Executor', cpf: '126.889.254-82', color: '#f0abfc' },
-    { id: 'u_12854659465', name: 'Maria Eduarda', squadId: 'sq_madein', role: 'Executor', cpf: '128.546.594-65', color: '#f0abfc' },
-
-    // Study You
-    { id: 'u_11280537485', name: 'Arthur', squadId: 'sq_study', role: 'Mentor Júnior', cpf: '112.805.374-85', color: '#f59e0b' },
-    { id: 'u_11363982443', name: 'Fábio', squadId: 'sq_study', role: 'Executor', cpf: '113.639.824-43', color: '#fcd34d' },
-    { id: 'u_13120767476', name: 'Henry', squadId: 'sq_study', role: 'Executor', cpf: '131.207.674-76', color: '#fcd34d' },
-    { id: 'u_13085619461', name: 'Muryllo', squadId: 'sq_study', role: 'Executor', cpf: '130.856.194-61', color: '#fcd34d' },
-    { id: 'u_11226746438', name: 'Carlos', squadId: 'sq_study', role: 'Executor', cpf: '112.267.464-38', color: '#fcd34d' },
-
-    // Catalise
-    { id: 'u_12379496455', name: 'Gabriel', squadId: 'sq_catalise', role: 'Mentor Júnior', cpf: '123.794.964-55', color: '#84cc16' },
-    { id: 'u_12467048462', name: 'Leonardo', squadId: 'sq_catalise', role: 'Executor', cpf: '124.670.484-62', color: '#bef264' },
-    { id: 'u_12718788445', name: 'Whylma', squadId: 'sq_catalise', role: 'Executor', cpf: '127.187.884-45', color: '#bef264' },
-    { id: 'u_11833970462', name: 'Ághata', squadId: 'sq_catalise', role: 'Executor', cpf: '118.339.704-62', color: '#bef264' },
-    { id: 'u_13512035418', name: 'Ana Júlia', squadId: 'sq_catalise', role: 'Executor', cpf: '135.120.354-18', color: '#bef264' },
 ];
 
 // INITIAL BUILDINGS (Pre-built Squad HQs)
 const INITIAL_BUILDINGS: BuildingData[] = [
     // TRIBAL CENTER (Center of Map) - 3x3 at 8,8 covers 8,9,10
     { id: 'b_tribal_center', ownerId: 'u_senior', squadId: 'sq_board', type: BuildingType.TRIBAL_CENTER, level: 1, position: { x: 8, z: 8 }, isPlaced: true, tasks: [] },
-    // Rotaê HQ (Red)
-    { id: 'b_rotae_hq', ownerId: 'u_14130055437', squadId: 'sq_rotae', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 4, z: 4 }, isPlaced: true, tasks: [] },
+    //OCCA Social Club HQ (Red)
+    { id: 'b_osc_hq', ownerId: 'u_senior', squadId: 'sq_osc', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 4, z: 4 }, isPlaced: true, tasks: [] },
     // Geração Conectada HQ (Blue)
-    { id: 'b_geracao_hq', ownerId: 'u_15062240409', squadId: 'sq_geracao', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 16, z: 4 }, isPlaced: true, tasks: [] },
+    { id: 'b_academy_hq', ownerId: 'u_senior', squadId: 'sq_academy', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 16, z: 4 }, isPlaced: true, tasks: [] },
     // Made in Belo Jardim HQ (Fuchsia)
-    { id: 'b_madein_hq', ownerId: 'u_14634956411', squadId: 'sq_madein', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 4, z: 16 }, isPlaced: true, tasks: [] },
-    // Study You HQ (Amber)
-    { id: 'b_study_hq', ownerId: 'u_11280537485', squadId: 'sq_study', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 16, z: 16 }, isPlaced: true, tasks: [] },
-    // Catalise HQ (Lime)
-    { id: 'b_catalise_hq', ownerId: 'u_12379496455', squadId: 'sq_catalise', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 10, z: 16 }, isPlaced: true, tasks: [] },
+    { id: 'b_madein_hq', ownerId: 'u_senior', squadId: 'sq_occasulo', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 4, z: 16 }, isPlaced: true, tasks: [] },
+    //Luiz Guilherme Casa
+    { id: 'b_luiz_hq', ownerId: 'u_07406180594', squadId: 'sq_osc', type: BuildingType.RESIDENTIAL, level: 1, position: { x: 1, z: 2}, isPlaced: true, tasks: [] }
+    { id: 'b_alice_hq', ownerId: 'u_14900059439', squadId: 'sq_osc', type: BuildingType.RESIDENTIAL, level: 1, position: { x: 3, z: 2}, isPlaced: true, tasks: [] }
 ];
 
 
