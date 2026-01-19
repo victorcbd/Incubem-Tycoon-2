@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import GameScene from './components/GameScene';
-import { GameState, BuildingType, BuildingData, GridPosition, Resources, GRID_SIZE, KanbanStatus, KanbanTask, TaskSize, TaskComplexity, User, PlayerProfile, TaskRuleOption, Squad, FixedTimeType, TaskHistoryEntry } from './types';
+import { GameState, BuildingData, BuildingType, GridPosition, Resources, GRID_SIZE, KanbanStatus, KanbanTask, TaskSize, TaskComplexity, User, PlayerProfile, TaskRuleOption, Squad, FixedTimeType, TaskHistoryEntry } from './types';
 import { getUpgradeCost, BUILD_COSTS, getBuildingSize, FIBONACCI_SIZES, COMPLEXITY_LABELS, AIM_OPTIONS, calculateNextLevelXP, getReputationStars, TASK_RULES, RULE_DESCRIPTIONS, BUILDING_PA_LIMITS, BUILDING_METADATA } from './constants';
 import { Coins, Box, Hammer, ArrowBigUp, AlertTriangle, Trash2, Move, X, Plus, ClipboardList, BarChart3, GripVertical, Star, Target, CheckCircle2, UserCheck, LogIn, Home, Users, Briefcase, FileText, MessageSquare, Award, Link as LinkIcon, Save, Filter, Shield, Lock, Calculator, Database, Activity, CalendarClock, FastForward, ZoomIn, ZoomOut, Check, Menu, FilePlus, Layout, Crosshair, Settings, LogOut, ChevronDown, TrendingUp, Info, RefreshCcw, Clock, Zap, Crown, AlertCircle, Landmark, GraduationCap, Calendar, Repeat, History, CalendarDays, ShoppingBag, Package } from 'lucide-react';
 import MentorContainer from './components/mentor/MentorContainer';
@@ -55,7 +55,7 @@ const INITIAL_BUILDINGS: BuildingData[] = [
     // Made in Belo Jardim HQ (Fuchsia)
     { id: 'b_madein_hq', ownerId: 'u_senior', squadId: 'sq_occasulo', type: BuildingType.SQUAD_HQ, level: 1, position: { x: 4, z: 16 }, isPlaced: true, tasks: [] },
     //Luiz Guilherme Casa
-    { id: 'b_luiz_hq', ownerId: 'u_07406180594', squadId: 'sq_osc', type: BuildingType.RESIDENTIAL, level: 1, position: { x: 1, z: 2}, isPlaced: true, tasks: [] }
+    { id: 'b_luiz_hq', ownerId: 'u_07406180594', squadId: 'sq_osc', type: BuildingType.RESIDENTIAL, level: 1, position: { x: 1, z: 2}, isPlaced: true, tasks: [] },
     { id: 'b_alice_hq', ownerId: 'u_14900059439', squadId: 'sq_osc', type: BuildingType.RESIDENTIAL, level: 1, position: { x: 3, z: 2}, isPlaced: true, tasks: [] }
 ];
 
@@ -378,6 +378,13 @@ export default function App() {
       }));
   };
 
+  const updateBuilding = (id: string, updates: Partial<BuildingData>) => {
+      setGameState(prev => ({
+          ...prev,
+          buildings: prev.buildings.map(b => b.id === id ? { ...b, ...updates } : b)
+      }));
+  };
+
   const handleBuildingClick = (id: string) => {
     if (buildMode || moveModeId) return;
     setGameState(prev => ({ ...prev, selectedBuildingId: id }));
@@ -617,14 +624,14 @@ export default function App() {
   const handleDrop = (e: React.DragEvent, targetCol: KanbanStatus) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData('taskId');
-    if (!taskId || !gameState.selectedBuildingId) return;
+    if (!taskId) return;
 
     // Use statsTasks (displayTasks) logic to find the task in current view
     // Note: displayTasks depends on render scope, so we look up in global building state for safety
     // Simplified: Look in the currently selected building context.
     
     // Find building containing task (might not be selectedBuilding if viewing HQ aggregate)
-    let targetBuildingId = gameState.selectedBuildingId;
+    let targetBuildingId = gameState.selectedBuildingId || "";
     let foundTask: KanbanTask | undefined;
 
     // First check selected building
@@ -643,7 +650,7 @@ export default function App() {
         }
     }
 
-    if (foundTask && foundTask.status !== targetCol) {
+    if (foundTask && foundTask.status !== targetCol && targetBuildingId) {
         moveTask(null, foundTask, targetCol, targetBuildingId);
     }
     setDraggedTaskId(null);
@@ -904,9 +911,12 @@ export default function App() {
   if (isMyHouse) {
       const allMyTasks: (KanbanTask & { originalBuildingId: string })[] = [];
       gameState.buildings.forEach(b => {
+          // If it's not a home or we are viewing our own, check all functional buildings
           if (b.type !== BuildingType.RESIDENTIAL) {
               b.tasks.forEach(t => {
-                  if (t.participants?.includes(gameState.currentUser!.id) || t.creatorId === gameState.currentUser?.id) {
+                  const isParticipant = t.participants?.includes(gameState.currentUser!.id);
+                  const isCreator = t.creatorId === gameState.currentUser?.id;
+                  if (isParticipant || isCreator) {
                       allMyTasks.push({ ...t, originalBuildingId: b.id });
                   }
               });
@@ -1179,7 +1189,7 @@ export default function App() {
                         onClick={() => setShowProfileMenu(!showProfileMenu)}
                         className="bg-slate-900/90 border-2 border-slate-600 rounded-full p-1 pr-4 shadow-xl backdrop-blur-md flex items-center gap-2 md:gap-3 hover:border-indigo-500 transition-colors scale-90 origin-top-left md:scale-100"
                     >
-                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-600 border-2 border-slate-700 flex items-center justify-center text-sm md:text-lg font-bold text-white uppercase shadow-inner">
+                        <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-indigo-600 border-2 border-slate-700 flex items-center justify-center text-sm font-bold text-white uppercase shadow-inner">
                             {gameState.currentUser.name.substring(0,2)}
                         </div>
                         <div className="flex flex-col items-start">
@@ -2007,33 +2017,55 @@ export default function App() {
                            </div>
                        </div>
                    ) : (
-                      <div className="max-w-md mx-auto space-y-4">
-                        <div className="bg-slate-800 p-4 rounded border border-slate-600 mb-6">
-                            <h3 className="font-bold text-white mb-2 flex items-center gap-2">
-                                <Info size={16} className="text-blue-400"/> Sobre esta Função
-                            </h3>
-                            <p className="text-sm text-slate-300 mb-4">{BUILDING_METADATA[selectedBuilding.type]?.description}</p>
-                            <div className="flex flex-wrap gap-1">
-                                {BUILDING_METADATA[selectedBuilding.type]?.functions.map(f => (
-                                    <span key={f} className="text-xs bg-slate-700 px-2 py-1 rounded text-slate-200">{f}</span>
-                                ))}
+                      <div className="max-w-2xl mx-auto space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="bg-slate-800 p-5 rounded-xl border border-slate-700">
+                                <h3 className="font-bold text-white mb-3 flex items-center gap-2">
+                                    <Info size={16} className="text-blue-400"/> Sobre esta Função
+                                </h3>
+                                <p className="text-sm text-slate-400 mb-4">{BUILDING_METADATA[selectedBuilding.type]?.description}</p>
+                                <div className="flex flex-wrap gap-1">
+                                    {BUILDING_METADATA[selectedBuilding.type]?.functions.map(f => (
+                                        <span key={f} className="text-[10px] bg-slate-700 px-2 py-1 rounded text-slate-200 font-bold uppercase">{f}</span>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 flex flex-col gap-4">
+                                <h3 className="font-bold text-white mb-1 flex items-center gap-2">
+                                    <FileText size={16} className="text-indigo-400"/> Gestão do Projeto
+                                </h3>
+                                <div className="relative group flex-1">
+                                    <label className="text-[10px] uppercase font-bold text-slate-500 mb-1 block tracking-wider">Objetivo OCCA Específico</label>
+                                    <textarea 
+                                        className="w-full bg-slate-900/50 border border-slate-700 rounded-lg p-3 text-slate-300 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all resize-none h-full min-h-[100px]"
+                                        placeholder="O que está sendo construído ou entregue neste prédio especificamente? (Ex: Protótipo do Novo Dashboard)"
+                                        value={selectedBuilding.description || ''}
+                                        onChange={(e) => updateBuilding(selectedBuilding.id, { description: e.target.value })}
+                                    />
+                                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Settings size={14} className="text-slate-500"/>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
                         {(isOwner || isMaster) && (
-                            <>
-                            <button onClick={upgradeSelected} className="w-full bg-green-600 p-4 rounded font-bold text-white flex items-center justify-center gap-2">
-                                <ArrowBigUp /> Evoluir ({isMaster ? '0 (Master)' : getUpgradeCost(selectedBuilding.level, selectedBuilding.type).coins + 'C'})
-                            </button>
-                            <div className="flex gap-2">
-                                <button onClick={() => { setMoveModeId(selectedBuilding.id); setGameState(prev => ({...prev, selectedBuildingId: null})); }} className="flex-1 bg-yellow-600 p-4 rounded font-bold text-white flex items-center justify-center gap-2">
-                                    <Move /> Mover
-                                </button>
-                                <button onClick={deleteSelected} className="flex-1 bg-red-600 p-4 rounded font-bold text-white flex items-center justify-center gap-2">
-                                    <Trash2 /> Demolir
-                                </button>
+                            <div className="bg-slate-800/30 p-6 rounded-2xl border border-slate-700/50">
+                                <div className="flex flex-col gap-3">
+                                    <button onClick={upgradeSelected} className="w-full bg-green-600 hover:bg-green-500 p-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 shadow-lg transition-transform hover:scale-[1.01] active:scale-[0.99]">
+                                        <ArrowBigUp /> Evoluir Projeto ({isMaster ? '0 (Master)' : getUpgradeCost(selectedBuilding.level, selectedBuilding.type).coins + 'C'})
+                                    </button>
+                                    <div className="flex gap-3">
+                                        <button onClick={() => { setMoveModeId(selectedBuilding.id); setGameState(prev => ({...prev, selectedBuildingId: null})); }} className="flex-1 bg-yellow-600 hover:bg-yellow-500 p-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 shadow-md">
+                                            <Move size={18}/> Mover
+                                        </button>
+                                        <button onClick={deleteSelected} className="flex-1 bg-red-600 hover:bg-red-500 p-3 rounded-xl font-bold text-white flex items-center justify-center gap-2 shadow-md">
+                                            <Trash2 size={18}/> Demolir
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
-                            </>
                         )}
                       </div>
                    )}
@@ -2138,7 +2170,8 @@ export default function App() {
                                                                 className={`bg-slate-800 p-3 rounded border border-slate-700 shadow-sm relative group cursor-grab active:cursor-grabbing hover:border-indigo-500 transition-all ${draggedTaskId === task.id ? 'opacity-40 border-dashed border-slate-400' : ''}`}
                                                             >
                                                                 <p className="text-sm text-slate-200 font-medium leading-snug mb-2">{task.content}</p>
-                                                                <div className="flex flex-wrap gap-1">
+                                                                
+                                                                <div className="flex flex-wrap gap-1 mb-2">
                                                                     <span className="text-[9px] bg-slate-900 px-1.5 rounded border border-slate-700 text-slate-400">PA: {calculateTaskPA(task)}</span>
                                                                     {task.ruleValue === 'FIXED' && task.fixedTimeType && (
                                                                         <span className="text-[9px] bg-orange-900/40 text-orange-300 px-1.5 rounded border border-orange-800/50 flex items-center gap-0.5">
@@ -2160,6 +2193,24 @@ export default function App() {
                                                                             {originTitle || 'Projeto'}
                                                                         </span>
                                                                     )}
+                                                                </div>
+
+                                                                {/* PARTICIPANT ICONS */}
+                                                                <div className="flex -space-x-1.5 mt-2 overflow-hidden">
+                                                                    {task.participants?.map(pid => {
+                                                                        const user = gameState.users.find(u => u.id === pid);
+                                                                        if (!user) return null;
+                                                                        return (
+                                                                            <div 
+                                                                                key={pid}
+                                                                                title={user.name}
+                                                                                className="w-5 h-5 rounded-full border border-slate-900 flex items-center justify-center text-[8px] font-bold text-white uppercase shadow-sm ring-1 ring-slate-800"
+                                                                                style={{ backgroundColor: user.color || '#4f46e5' }}
+                                                                            >
+                                                                                {user.name.substring(0, 1)}
+                                                                            </div>
+                                                                        );
+                                                                    })}
                                                                 </div>
                                                             </div>
                                                         );
@@ -2382,13 +2433,13 @@ export default function App() {
                                     <div className="flex items-center gap-4 mb-4">
                                         <button 
                                             onClick={() => handleTaskFieldUpdate({ fixedTimeType: 'DAILY', fixedQuantityLimit: undefined, fixedDeadline: Date.now() + 86400000 })}
-                                            className={`flex-1 py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-2 border-2 transition-all ${editingTask.task.fixedDeadline !== undefined && editingTask.task.fixedQuantityLimit === undefined ? 'bg-orange-600 border-orange-500 text-white' : 'bg-slate-900 border-slate-700 text-slate-500'}`}
+                                            className={`flex-1 py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-2 border-2 transition-all ${editingTask.task.fixedDeadline !== undefined && editingTask.task.fixedQuantityLimit === undefined ? 'bg-orange-600 border-orange-400 text-white' : 'bg-slate-900 border-slate-700 text-slate-500'}`}
                                         >
                                             <CalendarDays size={14}/> POR PERÍODO & PRAZO
                                         </button>
                                         <button 
                                             onClick={() => handleTaskFieldUpdate({ fixedQuantityLimit: 1, fixedDeadline: undefined, fixedTimeType: undefined })}
-                                            className={`flex-1 py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-2 border-2 transition-all ${editingTask.task.fixedQuantityLimit !== undefined ? 'bg-orange-600 border-orange-500 text-white' : 'bg-slate-900 border-slate-700 text-slate-500'}`}
+                                            className={`flex-1 py-2 rounded-lg font-bold text-xs flex items-center justify-center gap-2 border-2 transition-all ${editingTask.task.fixedQuantityLimit !== undefined ? 'bg-orange-600 border-orange-400 text-white' : 'bg-slate-900 border-slate-700 text-slate-500'}`}
                                         >
                                             <Repeat size={14}/> POR META (QTDE)
                                         </button>
@@ -2472,7 +2523,12 @@ export default function App() {
                                                 }}
                                             >
                                                 <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center text-xs font-bold">{u.name.substring(0,2)}</div>
+                                                    <div 
+                                                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shadow-sm ring-1 ring-slate-700"
+                                                        style={{ backgroundColor: u.color || '#4f46e5' }}
+                                                    >
+                                                        {u.name.substring(0,2).toUpperCase()}
+                                                    </div>
                                                     <div>
                                                         <span className="text-sm font-bold text-slate-200 block">{u.name}</span>
                                                         <span className="text-[10px] text-slate-400">{gameState.squads.find(s => s.id === u.squadId)?.name}</span>
@@ -2528,7 +2584,6 @@ export default function App() {
                                         <div className="mt-4 pt-4 border-t border-slate-600">
                                              {(() => {
                                                 const totalAvailable = editingTask.task.size * editingTask.task.complexity;
-                                                // Fix: Explicitly cast to number[] to resolve unknown type addition error during reduction
                                                 const currentDistributed = (Object.values(editingTask.task.customPaDistribution || {}) as number[]).reduce((a, b) => a + b, 0);
                                                 const isMatch = currentDistributed === totalAvailable;
                                                 return (
